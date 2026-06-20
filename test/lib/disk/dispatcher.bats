@@ -8,6 +8,7 @@ setup() {
   export CACHE_SYNC=1
   source "${BATS_TEST_DIRNAME}/../../../src/disk.sh"
   read_disk() { echo "55 100 466"; }
+  read_disk_io() { echo ""; }
 }
 
 teardown() {
@@ -62,6 +63,27 @@ teardown() {
   [[ "${output}" == "100G" ]]
   run main total
   [[ "${output}" == "466G" ]]
+}
+
+@test "disk.sh dispatcher - disk_refresh_io stores then computes rates" {
+  read_disk_io() { echo "1000 2000"; }
+  export MOCK_EPOCH=1000
+  disk_refresh_io
+  [[ "$(cache_get rd_raw)" == "1000" ]]
+  read_disk_io() { echo "3048 6096"; }
+  export MOCK_EPOCH=1002
+  disk_refresh_io
+  [[ "$(cache_get read)" == "1.0MB/s" ]]
+  [[ "$(cache_get write)" == "2.0MB/s" ]]
+}
+
+@test "disk.sh dispatcher - read and write subcommands echo the cache" {
+  cache_set read "5.0MB/s"
+  cache_set write "1.0MB/s"
+  run main read
+  [[ "${output}" == "5.0MB/s" ]]
+  run main write
+  [[ "${output}" == "1.0MB/s" ]]
 }
 
 @test "disk.sh dispatcher - unknown subcommand produces no output" {

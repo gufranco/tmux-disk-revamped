@@ -19,6 +19,8 @@ Built from
 | `#{disk_fg_color}` / `#{disk_bg_color}` | colors for the current tier |
 | `#{disk_used}` | used space in gigabytes, for example `100G` |
 | `#{disk_total}` | total space in gigabytes, for example `466G` |
+| `#{disk_read}` | disk read rate, Linux only, for example `1.2MB/s` |
+| `#{disk_write}` | disk write rate, Linux only |
 
 ## Install
 
@@ -50,6 +52,10 @@ Press `prefix + I` to install.
 Works on every supported platform and architecture with built-in tools, no extra
 package required. macOS (Intel and Apple Silicon) uses `df -g`; Linux (x86_64 and
 arm64) uses `df -BG`. Sizes are reported in gigabytes.
+
+Disk read and write I/O rates come from `/proc/diskstats` deltas and are Linux
+only. macOS does not expose cumulative per-disk read and write byte counters
+without a blocking sampler, so the I/O placeholders stay empty there.
 
 ## License
 

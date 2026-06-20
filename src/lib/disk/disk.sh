@@ -25,9 +25,41 @@ disk_parse_df() {
   echo "${pct:-0} ${used:-0} ${total:-0}"
 }
 
+# diskstats_io TEXT -> "<read_kb> <write_kb>" cumulative from /proc/diskstats.
+# Sectors are 512 bytes, so sectors / 2 is kilobytes.
+diskstats_io() {
+  printf '%s\n' "${1}" | awk '{ r += $6; w += $10 } END { print int(r / 2), int(w / 2) }'
+}
+
+# disk_rate_compute CURRENT PREVIOUS SECONDS -> kilobytes per second, never negative.
+disk_rate_compute() {
+  [[ "${1}" =~ ^[0-9]+$ && "${2}" =~ ^[0-9]+$ && "${3}" =~ ^[0-9]+$ ]] || { echo 0; return 0; }
+  (( ${3} <= 0 )) && { echo 0; return 0; }
+  local d=$(( ${1} - ${2} ))
+  (( d < 0 )) && d=0
+  echo $(( d / ${3} ))
+}
+
+# disk_format_rate KB_PER_SEC -> human readable rate.
+disk_format_rate() {
+  [[ "${1}" =~ ^[0-9]+$ ]] || { echo "0KB/s"; return 0; }
+  awk -v k="${1}" 'BEGIN {
+    if (k >= 1024) printf "%.1fMB/s", k / 1024;
+    else printf "%dKB/s", k;
+  }'
+}
+
 # Host-probe seams.
 _read_df_macos() { df -g "${1}" 2>/dev/null; }
 _read_df_linux() { df -BG "${1}" 2>/dev/null; }
+_read_diskstats() { cat /proc/diskstats 2>/dev/null; }
+
+# read_disk_io -> "<read_kb> <write_kb>" cumulative, empty off Linux.
+read_disk_io() {
+  if is_linux; then
+    diskstats_io "$(_read_diskstats)"
+  fi
+}
 
 # read_disk MOUNT -> "<pct> <used_gb> <total_gb>", empty on an unknown platform.
 read_disk() {
@@ -42,6 +74,11 @@ read_disk() {
 }
 
 export -f disk_parse_df
+export -f diskstats_io
+export -f disk_rate_compute
+export -f disk_format_rate
 export -f _read_df_macos
 export -f _read_df_linux
+export -f _read_diskstats
 export -f read_disk
+export -f read_disk_io

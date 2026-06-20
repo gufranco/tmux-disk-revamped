@@ -34,6 +34,28 @@ disk_refresh() {
   cache_set percent "${pct}"
   cache_set used "${used}"
   cache_set total "${total}"
+  disk_refresh_io
+}
+
+# disk_refresh_io -> compute read and write rates from the cumulative counters,
+# keeping the previous counters in tmux options so no temp file is needed.
+disk_refresh_io() {
+  local io rd wr now prev_rd prev_wr prev_ts dt
+  io="$(read_disk_io)"
+  [[ -n "${io}" ]] || return 0
+  read -r rd wr <<< "${io}"
+  now=$(date +%s)
+  prev_rd=$(cache_get rd_raw)
+  prev_wr=$(cache_get wr_raw)
+  prev_ts=$(cache_get io_ts)
+  if [[ "${prev_ts}" =~ ^[0-9]+$ ]]; then
+    dt=$(( now - prev_ts ))
+    cache_set read "$(disk_format_rate "$(disk_rate_compute "${rd}" "${prev_rd}" "${dt}")")"
+    cache_set write "$(disk_format_rate "$(disk_rate_compute "${wr}" "${prev_wr}" "${dt}")")"
+  fi
+  cache_set rd_raw "${rd}"
+  cache_set wr_raw "${wr}"
+  cache_set io_ts "${now}"
 }
 
 disk_tick() {
@@ -57,6 +79,8 @@ main() {
     bg_color)   disk_render_bg "$(cache_get percent)" ;;
     used)       disk_render_size "$(cache_get used)" ;;
     total)      disk_render_size "$(cache_get total)" ;;
+    read)       cache_get read ;;
+    write)      cache_get write ;;
     *)          return 0 ;;
   esac
 }

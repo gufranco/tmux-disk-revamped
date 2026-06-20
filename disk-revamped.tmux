@@ -15,6 +15,8 @@ placeholders=(
   "\#{disk_bg_color}"
   "\#{disk_used}"
   "\#{disk_total}"
+  "\#{disk_read}"
+  "\#{disk_write}"
 )
 
 commands=(
@@ -24,6 +26,8 @@ commands=(
   "#(${DISK_CMD} bg_color)"
   "#(${DISK_CMD} used)"
   "#(${DISK_CMD} total)"
+  "#(${DISK_CMD} read)"
+  "#(${DISK_CMD} write)"
 )
 
 interpolate() {
