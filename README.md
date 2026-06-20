@@ -64,6 +64,58 @@ Press `prefix + I` to install.
 | `@disk_revamped_separator` | `, ` | separator between disks in `#{disk_all}` |
 | `@disk_revamped_enable_logging` | `0` | set to `1` to log under `~/.tmux/disk-revamped-logs` |
 
+## Theme color suggestions
+
+The defaults leave the tier colors empty and rely on the 16 ANSI names remapped by the active tmux theme, so the plugin matches any theme out of the box. For exact hex values, copy one block below. The low tier maps to green, the medium tier to yellow, and the high tier to red.
+
+### Catppuccin Mocha
+
+```tmux
+set -g @disk_revamped_low_fg_color '#[fg=#a6e3a1]'
+set -g @disk_revamped_medium_fg_color '#[fg=#f9e2af]'
+set -g @disk_revamped_high_fg_color '#[fg=#f38ba8]'
+```
+
+### Dracula
+
+```tmux
+set -g @disk_revamped_low_fg_color '#[fg=#50fa7b]'
+set -g @disk_revamped_medium_fg_color '#[fg=#f1fa8c]'
+set -g @disk_revamped_high_fg_color '#[fg=#ff5555]'
+```
+
+### Nord
+
+```tmux
+set -g @disk_revamped_low_fg_color '#[fg=#a3be8c]'
+set -g @disk_revamped_medium_fg_color '#[fg=#ebcb8b]'
+set -g @disk_revamped_high_fg_color '#[fg=#bf616a]'
+```
+
+### Gruvbox Dark
+
+```tmux
+set -g @disk_revamped_low_fg_color '#[fg=#b8bb26]'
+set -g @disk_revamped_medium_fg_color '#[fg=#fabd2f]'
+set -g @disk_revamped_high_fg_color '#[fg=#fb4934]'
+```
+
+### Tokyo Night
+
+```tmux
+set -g @disk_revamped_low_fg_color '#[fg=#9ece6a]'
+set -g @disk_revamped_medium_fg_color '#[fg=#e0af68]'
+set -g @disk_revamped_high_fg_color '#[fg=#f7768e]'
+```
+
+### Solarized Dark
+
+```tmux
+set -g @disk_revamped_low_fg_color '#[fg=#859900]'
+set -g @disk_revamped_medium_fg_color '#[fg=#b58900]'
+set -g @disk_revamped_high_fg_color '#[fg=#dc322f]'
+```
+
 ## Support by platform and architecture
 
 Works on every supported platform and architecture with built-in tools, no extra
